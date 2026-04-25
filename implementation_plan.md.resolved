@@ -1,0 +1,78 @@
+# Implementation Plan: CogniFuse Project Alignment
+
+Align the CogniFuse application with the provided "Master Reference Document", implementing all 5 core modules and advanced technologies (GNN, GraphSAGE, SM-2, FAISS).
+
+## User Review Required
+
+> [!IMPORTANT]
+> This plan involves installing several large dependencies: `torch-geometric`, `faiss-cpu`, and `spacy`. Please ensure your environment has ~1GB of free space.
+
+> [!WARNING]
+> The **GNN (GraphSAGE)** requires unsupervised training on the graph after it is built to generate meaningful embeddings. This will add a slight delay (a few seconds) to the initial graph building phase.
+
+## Proposed Changes
+
+### Infrastructure
+
+#### [MODIFY] [requirements.txt](file:///Users/thekundannadella/Desktop/CogniFuse/backend/requirements.txt)
+- Add `torch-geometric`, `faiss-cpu`, `spacy`, `reportlab` (for PDF reports).
+
+### Module 1: NLP & OCR Enrichment
+
+#### [MODIFY] [ocr_service.py](file:///Users/thekundannadella/Desktop/CogniFuse/backend/ocr_service.py)
+- Enhance `extract_text_from_image` to better handle handwriting (tuning EasyOCR parameters).
+
+#### [MODIFY] [llm_service.py](file:///Users/thekundannadella/Desktop/CogniFuse/backend/llm_service.py)
+- Use the existing **OpenRouter** setup (currently using `inclusionai/ling-2.6-flash:free`) or **Grok** (if key provided) along with `spaCy` for NER to enrich concept extraction.
+
+### Module 2: GNN & Knowledge Graph
+
+#### [NEW] [gnn_service.py](file:///Users/thekundannadella/Desktop/CogniFuse/backend/gnn_service.py)
+- Implement `GraphSAGE` using `torch-geometric`.
+- Implement unsupervised training loop for node embeddings.
+- Implement link prediction to discover "implicit" relationships.
+
+#### [MODIFY] [graph.py](file:///Users/thekundannadella/Desktop/CogniFuse/backend/graph.py)
+- Update `KnowledgeGraph` to store GNN embeddings.
+- Integrate embeddings into the `get_graph_data` for better frontend clustering.
+
+### Module 3: Semantic Search & Learning Engine
+
+#### [NEW] [search_service.py](file:///Users/thekundannadella/Desktop/CogniFuse/backend/search_service.py)
+- Implement **Semantic Search** using `FAISS` and the node embeddings from the GNN.
+
+#### [MODIFY] [main.py](file:///Users/thekundannadella/Desktop/CogniFuse/backend/main.py)
+- Implement **SM-2 Spaced Repetition** logic for flashcard scheduling.
+- Add endpoints for Mind Map generation (Module 3).
+
+### Module 4 & 5: Assessment & Analytics
+
+#### [MODIFY] [main.py](file:///Users/thekundannadella/Desktop/CogniFuse/backend/main.py)
+- Update quiz logic to be fully "Adaptive" based on mastery.
+- New endpoints for **Analytics Dashboard**: `/analytics/mastery`, `/analytics/weak-zones`, `/analytics/streak`.
+
+### Frontend
+
+#### [NEW] [Analytics.js](file:///Users/thekundannadella/Desktop/CogniFuse/frontend/src/pages/Analytics.js)
+- Implement Module 5 dashboard: Heatmaps (using D3), bar charts for weak zones, and study streak display.
+
+#### [MODIFY] [MindMap.js](file:///Users/thekundannadella/Desktop/CogniFuse/frontend/src/pages/MindMap.js)
+- Update D3 visualization to use GNN-derived clusters for better spatial layout.
+
+## Open Questions
+
+1. **OCR Test Data**: I will generate a high-quality synthetic handwriting sample for the first test to ensure `EasyOCR` is correctly tuned.
+2. **Analytics Dashboard Location**: I will add a **new "Analytics" tab** to the main Navbar for better visibility, as it is a core module.
+3. **Data Persistence**: I will implement a local `backend/data/history.json` file to ensure study streaks and mastery history persist across restarts.
+
+## Verification Plan
+
+### Automated Tests
+- `pytest backend/tests/test_ocr.py`: Verify handwriting extraction.
+- `pytest backend/tests/test_gnn.py`: Verify GraphSAGE embedding generation and link prediction.
+- `pytest backend/tests/test_sm2.py`: Verify spaced repetition intervals.
+
+### Manual Verification
+1. Upload a handwritten image to the app.
+2. Complete quizes and check if the "Analytics" dashboard reflects the updated mastery.
+3. Use the search bar (to be added) to perform a semantic search and find related concepts.

@@ -1,0 +1,32 @@
+# CogniFuse — Full Alignment Task Tracker
+
+## Infrastructure
+- `[x]` Install dependencies (torch-geometric, faiss-cpu, spacy, reportlab)
+- `[x]` Update requirements.txt
+
+## Module 1: NLP & OCR
+- `[ ]` Enhance ocr_service.py for handwriting
+- `[ ]` Add spaCy NER enrichment to llm_service.py
+
+## Module 2: GNN & Knowledge Graph
+- `[x]` Create gnn_service.py (GraphSAGE + link prediction)
+- `[x]` Update graph.py to integrate GNN embeddings
+
+## Module 3: Semantic Search & Learning Engine
+- `[x]` Create search_service.py (FAISS semantic search)
+- `[ ]` Add SM-2 spaced repetition to main.py
+
+## Module 4 & 5: Assessment & Analytics
+- `[ ]` Add analytics endpoints to main.py
+- `[ ]` Add semantic search endpoint to main.py
+- `[ ]` Add recommend-next endpoint to main.py
+
+## Frontend
+- `[ ]` Create Analytics.js page
+- `[ ]` Update MindMap.js with GNN clusters
+- `[ ]` Update App.js with Analytics route/nav
+
+## Verification
+- `[ ]` Test OCR with handwritten image
+- `[ ]` Test GNN embedding generation
+- `[ ]` Test end-to-end flow in browser
