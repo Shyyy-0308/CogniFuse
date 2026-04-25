@@ -11,5 +11,7 @@ openai==1.65.1
 torch==2.1.0
 torch-geometric==2.7.0
 faiss-cpu==1.13.2
+numpy<2.0.0
+supabase==2.13.0
 spacy==3.8.13
 reportlab==4.4.10
